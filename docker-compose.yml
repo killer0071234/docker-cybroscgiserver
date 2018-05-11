@@ -1,0 +1,41 @@
+version: '3.1'
+
+services: 
+  mysql:
+    restart: always
+#    expose:
+#      - "3306"
+#      - "33060"
+#    ports:
+#      - "3306:3306"
+#      - "33060:33060"
+    image: mysql/mysql-server:5.7
+    volumes:
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/fhem-init.sql
+      - ./mysql/data:/var/lib/mysql
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+    networks:
+      - cybro-network
+    
+  cybroscgiserver:
+    restart: always
+    expose:
+      - "80"
+      - "4000"
+      - "8442"
+    ports:
+      - "4001:80"
+      - "4000:4000"
+      - "8442:8442"
+    hostname: cybroscgiserver
+    volumes:
+      - "./cybroscgiserver/core/:/opt/transfer/"
+      - "./cybroscgiserver/data/:/opt/data/"
+    build: cybroscgiserver
+    networks:
+      - cybro-network
+
+networks:
+  cybro-network:
+    driver: bridge
