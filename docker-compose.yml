@@ -30,6 +30,7 @@ services:
       - "8442:8442"
     hostname: cybroscgiserver
     volumes:
+      - "./cybroscgiserver/config/:/opt/config/"
       - "./cybroscgiserver/core/:/opt/transfer/"
       - "./cybroscgiserver/data/:/opt/data/"
     build: cybroscgiserver

@@ -1,9 +1,7 @@
 # docker-cybroscgiserver
-This is an docker container configuration for running the cybrotech scgi server on an docker container
+This is an docker container configuration for running the cybrotech scgi server in a docker container
 
-The CyBroScgiServer is used for communicating with PLC from Cybrotech Ltd.
-
-This docker container is in an early release state!! Use it at your own risk!
+The CyBroScgiServer is used for communicating with PLCs from Cybrotech Ltd.
 
 ## Contains
 
@@ -23,6 +21,11 @@ cd docker-cybroscgiserver
 docker-compose up -d
 ```
 
-- SCGI-web requests: http://[ip]:4001/scgi/
+## Usage
+
+For detailed usage / valid system tags check http://[ip]:4001/data/Readme.txt
+
+- web requests with xml-answer: http://[ip]:4001/scgi/?
+  Example: http://[ip]:4001/scgi/?sys.server_uptime -> returnes the ScgiServer Uptime
 - SCGI socket requests (TCP): [ip]:4000
 - Abus Push Messages (UDP): [ip]:8442
