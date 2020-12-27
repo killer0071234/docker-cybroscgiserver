@@ -1,98 +1,68 @@
-#mysql config for cybroscgi server
-CREATE DATABASE `solar` DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
-CREATE USER 'solaruser'@'%' IDENTIFIED BY 'solarpassword';
+-- -----------------------------------------------------
+-- Current state
+-- -----------------------------------------------------
 
-GRANT ALL PRIVILEGES ON * . * TO 'solaruser'@'%' IDENTIFIED BY 'solarpassword' WITH GRANT OPTION MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
-GRANT ALL PRIVILEGES ON `solar` . * TO 'solaruser'@'%';
+-- -----------------------------------------------------
+-- Schema cybro
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `cybro` DEFAULT CHARACTER SET utf8;
+USE `cybro`;
 
-FLUSH PRIVILEGES;
-
--- --------------------------------------------------------
---
--- Table structure for table `alarms`
---
-
-CREATE TABLE IF NOT EXISTS `alarms` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `type` int(11) NOT NULL,
-  `nad` int(11) NOT NULL,
-  `priority` tinyint(4) NOT NULL,
-  `tag_id` int(11) NOT NULL,
-  `tag` varchar(40) NOT NULL,
-  `value` varchar(16) NOT NULL,
-  `class` varchar(20) NOT NULL,
-  `message` varchar(50) NOT NULL,
-  `timestamp_raise` datetime NOT NULL,
-  `timestamp_gone` datetime NOT NULL,
-  `timestamp_ack` datetime NOT NULL,
+-- -----------------------------------------------------
+-- Table `cybro`.`measurements`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `cybro`.`measurements` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary key',
+  `nad` INT(11) NOT NULL COMMENT 'Cybro device NAD',
+  `tag` VARCHAR(40) NOT NULL COMMENT 'Cybro variable name',
+  `value` VARCHAR(16) NOT NULL COMMENT 'Cybro variable value',
+  `timestamp` DATETIME NOT NULL COMMENT 'Date and time when record is created',
   PRIMARY KEY (`id`),
-  KEY `tag_index` (`tag`),
-  KEY `tag_id_refs_id_8c986686` (`tag_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  INDEX `tag_index` (`tag` ASC))
+ENGINE = MyISAM
+DEFAULT CHARACTER SET = utf8
+COMMENT = 'Table holds measurements data, defined by sample tag in data_logger.xml';
 
--- --------------------------------------------------------
---
--- Table structure for table `controllers`
---
-
-CREATE TABLE IF NOT EXISTS `controllers` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nad` int(11) NOT NULL,
-  `location` varchar(50) NOT NULL,
-  `function` varchar(1000) NOT NULL,
-  `created_id` int(11) DEFAULT NULL,
-  `owner_id` int(11) DEFAULT NULL,
-  `plant_id` int(11) DEFAULT NULL,
-  `active` tinyint(1) NOT NULL,
-  `connection_type` int(11) NOT NULL DEFAULT '0',
-  `password` varchar(30) NOT NULL DEFAULT '',
-  `comm_status` int(11) NOT NULL DEFAULT '0',
-  `date_added` datetime NOT NULL,
-  `last_modified` datetime NOT NULL,
+-- -----------------------------------------------------
+-- Table `cybro`.`alarms`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `cybro`.`alarms` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary key',
+  `type` INT(11) NOT NULL COMMENT '1-alarm, 2-event',
+  `nad` INT(11) NOT NULL COMMENT 'Cybro device NAD',
+  `tag` VARCHAR(40) NOT NULL COMMENT 'Cybro variable name',
+  `value` VARCHAR(16) NOT NULL COMMENT 'Cybro variable value',
+  `priority` TINYINT(1) NOT NULL COMMENT 'Task priority: 0-low, 1-medium, 2-high',
+  `class` VARCHAR(20) NOT NULL COMMENT 'Maps to task class tag in data_logger.xml, user-defineable.',
+  `message` VARCHAR(50) NOT NULL COMMENT 'Alarm message configured by user',
+  `timestamp_raise` DATETIME NOT NULL COMMENT 'Date and time alarm was triggered',
+  `timestamp_gone` DATETIME NOT NULL COMMENT 'Date and time state of cybro variable returned to normal',
+  `timestamp_ack` DATETIME NOT NULL COMMENT 'Date and time operator acknowledged alarm',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `nad_index` (`nad`),
-  KEY `controllers_created_id` (`created_id`),
-  KEY `controllers_owner_id` (`owner_id`),
-  KEY `controllers_plant_id` (`plant_id`),
-  KEY `plant_id_refs_id_9918366d` (`plant_id`),
-  KEY `owner_id_refs_user_ptr_id_7e341e7c` (`owner_id`),
-  KEY `created_id_refs_user_ptr_id_7e341e7c` (`created_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  INDEX `tag_index` (`tag` ASC))
+ENGINE = MyISAM
+DEFAULT CHARACTER SET = utf8
+COMMENT = 'Table holds triggered alarms and events, defined in data_logger.xml';
 
--- --------------------------------------------------------
---
--- Table structure for table `measurements`
---
-
-CREATE TABLE IF NOT EXISTS `measurements` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nad` int(11) NOT NULL,
-  `tag_id` int(11) DEFAULT NULL,
-  `tag` varchar(40) NOT NULL,
-  `value` varchar(16) NOT NULL,
-  `timestamp` datetime NOT NULL,
+-- -----------------------------------------------------
+-- Table `cybro`.`relays`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `cybro`.`relays` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary key',
+  `user_id` INT(11) NOT NULL,
+  `enabled` TINYINT(1) NOT NULL,
+  `session_id` INT(11) UNSIGNED NOT NULL COMMENT 'Allowed client id',
+  `message_count_rx` INT(11) NOT NULL,
+  `message_count_tx` INT(11) NOT NULL,
+  `last_message` DATETIME NULL DEFAULT NULL,
+  `last_controller_nad` INT(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `tag_index` (`tag`),
-  KEY `timestamp_index` (`timestamp`),
-  KEY `tag_id_refs_id_43bfa9c1` (`tag_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
---
--- Table structure for table `relays`
---
-
-CREATE TABLE IF NOT EXISTS `relays` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `enabled` tinyint(1) NOT NULL,
-  `session_id` int(11) unsigned NOT NULL,
-  `message_count_tx` int(11) NOT NULL,
-  `message_count_rx` int(11) NOT NULL,
-  `last_message` datetime DEFAULT NULL,
-  `last_controller_nad` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id_refs_user_ptr_id_2c1e7d40` (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  INDEX `user_id_refs_user_ptr_id_2c1e7d40` (`user_id` ASC))
+ENGINE = MyISAM
+DEFAULT CHARACTER SET = utf8
+COMMENT = 'Table holds list of allowed clients for relaying abus messages from CyPro to Cybro';

@@ -8,6 +8,70 @@ legend:
   * - change/update
   ! - bug fix
   ? - known issue
+  - - deleted feature
+
+--------------------------------------------------------------------------------
+
+v3.0.6, 16.11.2020, Studio6dof/Zeljko
+
+  ! Added error handling to plc_head deserialization (when timestamp is FFFFFFFF).
+  ! Added additional check for plc program, after alc file is read.
+
+--------------------------------------------------------------------------------
+
+v3.0.5, 3.11.2020
+
+  ! Reading and writing negative integers was unsigned, instead of signed.
+
+--------------------------------------------------------------------------------
+
+v3.0.4, 30.10.2020
+
+  ! Dbase access was always active, because enable tag in config.ini had wrong name.
+
+--------------------------------------------------------------------------------
+
+v3.0.3, 26.10.2020
+
+  ! Dbase, alarms.priority column was missing (introduced in 3.0.0).
+  ! Dbase, alarm/event priority went into alarms.type, instead of alarms.priority.
+  ! Empty http request caused an exception.
+  + SQL script to create dbase exclusively for SCGI added.
+
+--------------------------------------------------------------------------------
+
+v3.0.2, Studio6dof/Zeljko
+
+  ! Data logger, support for events was broken.
+  ! Command line utility cybro_com_server.py was not working.
+
+--------------------------------------------------------------------------------
+
+v3.0.1, Studio6dof/Zeljko
+
+  * Configuration options simplified and more precisely documented.
+  + CAN interface added, it is now possible to connect controller using IEX bus.
+  - Option UseHTTPProtocol removed, plain TCP requests not supported any more.
+
+--------------------------------------------------------------------------------
+
+v3.0.0, 15.9.2020, Studio6dof/Zeljko
+
+  * Code rewritten and optimized.
+  * Python version upgraded from 2.6 to 3.8.
+  ? Instead of timestamp (plc_head.transfer, 32-bit), server now uses
+    allocation crc (plc_head.alloc_crc, 16-bit). Until crc is widen to 32 bit,
+    there is a small chance that two different PLC programs may have same CRC
+    (10 programs: 0.1%, 20 programs: 0.3%, 40 programs: 1%, 100 programs: 8%).
+    In such case, both read and write may produce unpredictable results. This
+    doesn't apply to number of controllers, only the number of different programs.
+
+--------------------------------------------------------------------------------
+
+v2.3.3, 18.7.2019, 3-Port
+
+  ! Old socked must be closed before opening the new one.
+  ! Properly escaping descriptions (&, <, >) to prevent invalid XML response.
 
 --------------------------------------------------------------------------------
 
