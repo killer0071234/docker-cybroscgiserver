@@ -21,11 +21,9 @@ services:
   cybroscgiserver:
     restart: always
     expose:
-      - "80"
       - "4000"
       - "8442"
     ports:
-      - "4001:80"
       - "4000:4000"
       - "8442:8442"
     hostname: cybroscgiserver

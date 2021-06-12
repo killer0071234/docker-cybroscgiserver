@@ -8,8 +8,8 @@ Supported PLCs:
 
 ## Contains
 
-- Python 3.8.7 required for CyBroScgiServer
-- CyBroScgiServer v3.0.6 from http://www.cybrotech.com/
+- Python 3.8.8 required for CyBroScgiServer
+- CyBroScgiServer v3.1.1 from http://www.cybrotech.com/
 - mySQL-Logging
 
 ## Requirements
@@ -31,11 +31,7 @@ For detailed usage / valid system tags check http://[ip]:4001/data/Readme.txt
 
 - web requests to SCGI socket with xml-answer: http://[ip]:4000/?
   Example: http://[ip]:4000/?sys.server_uptime -> returnes the ScgiServer Uptime
-- SCGI socket requests (TCP): [ip]:4000
 - Abus Push Messages (UDP): [ip]:8442
-
-If you need to host userfiles on webserver (ex: used for cybrominiscada), put the files under:
-./cybroscgiserver/data/
 
 The configuration file for the scgi server can be found under:
 ./cybroscgiserver/config/config.ini
