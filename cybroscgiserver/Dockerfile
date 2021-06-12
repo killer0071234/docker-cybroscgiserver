@@ -1,6 +1,6 @@
 FROM debian:latest
 
-MAINTAINER Daniel Gangl <killer007@gmx.at>
+LABEL org.opencontainers.image.authors="Daniel Gangl <killer007@gmx.at>"
 
 RUN apt-get update
 
@@ -12,11 +12,11 @@ RUN apt-get -y install build-essential zlib1g-dev libncurses5-dev libgdbm-dev li
 
 WORKDIR /tmp/
 
-RUN curl -O https://www.python.org/ftp/python/3.8.7/Python-3.8.7.tar.xz
+RUN curl -O https://www.python.org/ftp/python/3.8.8/Python-3.8.8.tar.xz
 
-RUN tar -xf Python-3.8.7.tar.xz
+RUN tar -xf Python-3.8.8.tar.xz
 
-WORKDIR /tmp/Python-3.8.7
+WORKDIR /tmp/Python-3.8.8
 
 RUN ./configure --enable-optimizations --enable-loadable-sqlite-extensions
 
@@ -38,13 +38,9 @@ RUN pip3 install python-can
 
 RUN pip3 install aiomysql
 
-RUN ln -s /usr/share/lighttpd/create-mime.conf.pl /usr/share/lighttpd/create-mime.assign.pl 
-
 WORKDIR /opt/cybroscgiserver/
 
 ADD core/cybroscgiserver.tar.xz /opt/cybroscgiserver/
-
-ADD config/lighttpd.conf /etc/lighttpd/lighttpd.conf
 
 RUN chmod +x /opt/cybroscgiserver/run.sh
 
