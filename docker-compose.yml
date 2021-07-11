@@ -1,3 +1,7 @@
+# @Author: Daniel Gangl
+# @Date:   2021-06-12 11:28:54
+# @Last Modified by:   Daniel Gangl
+# @Last Modified time: 2021-07-11 23:38:08
 version: '3.1'
 
 services: 
@@ -28,9 +32,8 @@ services:
       - "8442:8442/udp"
     hostname: cybroscgiserver
     volumes:
-      - "./cybroscgiserver/config/:/opt/config/"
-      - "./cybroscgiserver/core/:/opt/transfer/"
-      - "./cybroscgiserver/data/:/opt/data/"
+        - "./cybroscgiserver/config/config.ini:/usr/local/bin/scgi_server/config.ini"
+        - "./cybroscgiserver/config/data_logger.xml:/usr/local/bin/scgi_server/data_logger.xml"
     build: cybroscgiserver
     networks:
       - cybro-network
