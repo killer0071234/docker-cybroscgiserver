@@ -1,50 +1,36 @@
-FROM debian:latest
+FROM python:3.8-buster
 
 LABEL org.opencontainers.image.authors="Daniel Gangl <killer007@gmx.at>"
+
+WORKDIR /tmp/
 
 RUN apt-get update
 
 RUN apt-get upgrade -y
 
-RUN apt-get install -y curl lighttpd
+RUN apt-get install -y curl
 
-RUN apt-get -y install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev
+RUN wget http://www.cybrotech.com/wp-content/uploads/2017/01/CyBroScgiServer-v3.1.1.zip
 
-WORKDIR /tmp/
+RUN unzip *.zip
 
-RUN curl -O https://www.python.org/ftp/python/3.8.8/Python-3.8.8.tar.xz
+RUN mv scgi_server/ /usr/local/bin/
 
-RUN tar -xf Python-3.8.8.tar.xz
+RUN rm -r *
 
-WORKDIR /tmp/Python-3.8.8
+WORKDIR /usr/local/bin/scgi_server/
 
-RUN ./configure --enable-optimizations --enable-loadable-sqlite-extensions
+RUN pip install -r src/requirements.txt
 
-RUN make -j 5
+RUN mkdir /usr/local/bin/scgi_server/log && touch /usr/local/bin/scgi_server/log/scgi.log && ln -sf /dev/stdout /usr/local/bin/scgi_server/log/scgi.log
 
-RUN make install
+COPY ./sh /usr/local/bin/scgi_server/
 
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+COPY ./config /usr/local/bin/scgi_server/
 
-RUN python3.8 get-pip.py
+RUN chmod +x run.sh
 
-RUN pip3 install pytz
-
-RUN pip3 install rx
-
-RUN pip3 install watchdog
-
-RUN pip3 install python-can
-
-RUN pip3 install aiomysql
-
-WORKDIR /opt/cybroscgiserver/
-
-ADD core/cybroscgiserver.tar.xz /opt/cybroscgiserver/
-
-RUN chmod +x /opt/cybroscgiserver/run.sh
-
-CMD /opt/cybroscgiserver/run.sh
+CMD /usr/local/bin/scgi_server/run.sh
 
 HEALTHCHECK --interval=5s --timeout=2s --retries=12 \
   CMD curl --silent --fail http://localhost:4000/?sys.server_uptime || exit 1

@@ -22,10 +22,10 @@ services:
     restart: always
     expose:
       - "4000"
-      - "8442"
+      - "8442/udp"
     ports:
       - "4000:4000"
-      - "8442:8442"
+      - "8442:8442/udp"
     hostname: cybroscgiserver
     volumes:
       - "./cybroscgiserver/config/:/opt/config/"
