@@ -9,7 +9,7 @@ Supported PLCs:
 ## Contains
 
 - latest Python 3.8 required for CyBroScgiServer
-- CyBroScgiServer v3.1.1 from http://www.cybrotech.com/ (directly loaded from cybrotech.com)
+- CyBroScgiServer v3.1.2 from http://www.cybrotech.com/ (directly loaded from cybrotech.com)
 - mySQL-Logging (currently disabled)
 
 ## Requirements

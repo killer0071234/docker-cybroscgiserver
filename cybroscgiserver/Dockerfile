@@ -10,7 +10,7 @@ RUN apt-get upgrade -y
 
 RUN apt-get install -y curl
 
-RUN wget http://www.cybrotech.com/wp-content/uploads/2017/01/CyBroScgiServer-v3.1.1.zip
+RUN wget https://www.cybrotech.com/wp-content/uploads/2021/12/CyBroScgiServer-v3.1.2.zip
 
 RUN unzip *.zip
 
